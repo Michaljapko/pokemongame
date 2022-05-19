@@ -5,22 +5,32 @@ export const StyledPokemonCard = styled.div`
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	color: white;
 	/* height: 18rem; */
 	width: 12rem;
 	font-size: 1rem;
+	margin: 1rem 0;
 	border: 2px solid;
 	border-radius: 15px;
 	padding: 0 1rem 1rem 1rem;
 	font-weight: bold;
 	text-transform: capitalize;
-	background: linear-gradient(to bottom, rgb(43, 42, 42), rgb(27, 27, 27));
+	background: linear-gradient(
+		to bottom,
+		rgb(43, 42, 42) 40%,
+		${({ type, theme }) => {
+				return theme.pokemonColorType[type];
+			}}
+			250%
+	);
+	box-shadow: 0 10px 10px -5px rgb(0 0 0 / 5%);
 	border-color: ${({ type, theme }) => {
 		return theme.pokemonColorType[type];
 	}};
 `;
 export const StyledImgWrap = styled.div`
 	background: linear-gradient(to bottom, rgb(60 60 60 / 59%), rgb(36 36 36));
-	box-shadow: 0px -3px 4px 0px #ffffff30;
+	box-shadow: 3px 5px 5px 0px #00000033;
 	border-radius: 50%;
 `;
 export const StyledHpBar = styled.div`
@@ -29,13 +39,14 @@ export const StyledHpBar = styled.div`
 	width: ${({ percent }) => {
 		return percent;
 	}}%;
+	transition: 1s width;
 	height: 5px;
 	background-color: #98f598;
 	border-radius: 5px;
 	margin: 0.5rem 0;
 `;
 export const StyledPokemonImg = styled.img`
-	width: 150px;
+	height: 165px;
 `;
 export const StyledPokemonName = styled.p`
 	font-size: 1.5rem;
@@ -51,7 +62,6 @@ export const StyledPokemonId = styled.p`
 `;
 export const StyledTextSmall = styled.p`
 	font-size: 0.9rem;
-	margin: 0.5rem;
 	color: #adadad;
 `;
 
@@ -62,4 +72,7 @@ export const StyledPokemonColumn = styled.div`
 	width: 100%;
 	text-align: center;
 	margin: 0.5rem;
+	background: #ffffff0d;
+	border-radius: 10px;
+	padding: 0.3rem;
 `;

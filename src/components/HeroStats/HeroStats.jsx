@@ -1,20 +1,28 @@
 import { MdCatchingPokemon } from 'react-icons/md';
-import { GiCatch } from 'react-icons/gi';
+
 import { GiPokecog } from 'react-icons/gi';
+import { StyledHeroStats } from './HeroStats.styled';
 
 const HeroStats = ({ stats }) => {
 	return (
-		<div>
-			<p>
-				<GiCatch /> Trener Exp:{stats.exp}
-			</p>
-			<p>
-				<GiPokecog /> Search Detector:{stats.search}
-			</p>
-			<p>
-				<MdCatchingPokemon /> PokeBall: {stats.pokeball}
-			</p>
-		</div>
+		<StyledHeroStats>
+			<div>
+				<p>Exp</p>
+				{stats.exp}
+			</div>
+			<div>
+				<p>
+					<GiPokecog />
+				</p>
+				<p>{stats.search}</p>
+			</div>
+			<div>
+				<p>
+					<MdCatchingPokemon />
+				</p>
+				<p>{stats.pokeball}</p>
+			</div>
+		</StyledHeroStats>
 	);
 };
 

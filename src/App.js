@@ -4,8 +4,11 @@ import { getRandomInt } from './helpers/getNumber';
 import PokemonCard from './components/PokeomnCard/PokemonCard';
 import HeroStats from './components/HeroStats';
 import Pokedex from './components/Pokedex';
+import Board from './components/Board';
+import Button from './components/Button';
 import theme from './theme';
-import { message } from './store/searchMessages';
+import { motion } from 'framer-motion';
+import { messageData } from './store/messages';
 import { ThemeProvider } from 'styled-components';
 import './App.css';
 
@@ -14,14 +17,15 @@ function App() {
 	const [isPokdexShow, setIsPokdexShow] = useState(false);
 	const [isPokChoose, setIsPokChoose] = useState(false);
 	const [isFightMode, setIsFightMode] = useState(false);
-	const [searchMessage, setSearchMessage] = useState();
+	const [isAttacking, setIsAttacking] = useState(false);
+	const [message, setMessage] = useState();
 	const [pokemon, setPokemon] = useState();
 	const [chosenPokemonId, setChosenPokemonId] = useState();
 	const [pokedexData, setPokedexData] = useState([]);
 	const [heroStats, setHeroStats] = useState({
 		exp: 100,
-		pokeball: 5,
-		search: 10,
+		pokeball: 50,
+		search: 100,
 	});
 
 	const getPokemon = () => {
@@ -40,16 +44,22 @@ function App() {
 	};
 
 	const catchPokemon = () => {
-		const pokemonNum = getRandomInt(0, pokemon.base_experience);
-		const playerNum = getRandomInt(0, heroStats.exp);
-		if (playerNum > pokemonNum) {
-			setPokedexData([...pokedexData, pokemon]);
-		}
+		if (heroStats.pokeball !== 0) {
+			const pokemonNum = getRandomInt(0, pokemon.base_experience);
+			const playerNum = getRandomInt(0, heroStats.exp);
+			if (playerNum > pokemonNum) {
+				setPokedexData([...pokedexData, pokemon]);
+				setPokemon('');
+				setMessage(messageData.catchSuccses);
+			}
 
-		setHeroStats({
-			...heroStats,
-			pokeball: heroStats.pokeball - 1,
-		});
+			setHeroStats({
+				...heroStats,
+				pokeball: heroStats.pokeball - 1,
+			});
+		} else {
+			setMessage(messageData.pokeballNull);
+		}
 	};
 
 	const getPokoemonId = (id) => {
@@ -59,62 +69,100 @@ function App() {
 	};
 
 	const attack = () => {
+		setIsAttacking(true);
 		const attackPower = pokedexData[chosenPokemonId].stats[1].base_stat;
-		const enemyAttackPower = pokemon.stats[1].base_stat;
-		const defPower = pokedexData[chosenPokemonId].stats[2].base_stat;
 		const enemyDefPower = pokemon.stats[2].base_stat;
-		const enemyHp = pokemon.currentHp;
 		let attack = getRandomInt(0, attackPower) - getRandomInt(0, enemyDefPower);
 		if (attack < 0) {
 			attack = 0;
 		}
-		setPokemon({ ...pokemon, currentHp: enemyHp - attack });
+		const enemyHp = pokemon.currentHp - attack;
+		setPokemon({ ...pokemon, currentHp: enemyHp });
+		if (enemyHp <= 0) {
+			setTimeout(() => {
+				setIsFightMode(false);
+				setIsAttacking(false);
+				setMessage(messageData.win);
+				setPokemon('');
+			}, 1000);
+		} else {
+			setTimeout(enemyAttack, 1000);
+		}
+	};
+
+	const enemyAttack = () => {
+		setIsAttacking(true);
+		const enemyAttackPower = pokemon.stats[1].base_stat;
+		const defPower = pokedexData[chosenPokemonId].stats[2].base_stat;
+		let enemyAttack = getRandomInt(0, enemyAttackPower) - getRandomInt(0, defPower);
+		if (enemyAttack < 0) {
+			enemyAttack = 0;
+		}
+		const hp = pokedexData[chosenPokemonId].currentHp - enemyAttack;
+		if (hp <= 0) {
+			// setMessage(messageData.lose);
+			// // pokedexData.splice(chosenPokemonId, 1);
+			// // setPokedexData([...pokedexData]);
+			// setIsPokChoose(true);
+			console.log('dupa Przegrales');
+		}
+		pokedexData[chosenPokemonId].currentHp = hp;
+		setPokedexData([...pokedexData]);
+		setIsAttacking(false);
 	};
 
 	const searchPokemon = () => {
-		const num = getRandomInt(0, 7);
-		switch (num) {
-			case 0:
-			case 1:
-			case 2:
-			case 3:
-				getPokemon();
-				setHeroStats({
-					...heroStats,
-					search: heroStats.search - 1,
-				});
-				setSearchMessage('');
-				break;
-			case 4:
-				setHeroStats({
-					...heroStats,
-					search: heroStats.search - 1,
-					pokeball: heroStats.pokeball + 1,
-				});
-				setSearchMessage(message.pokeball);
-				break;
-			case 5:
-				setHeroStats({
-					...heroStats,
-					search: heroStats.search + 1,
-				});
-				setSearchMessage(message.device);
-				break;
-			case 6:
-				setHeroStats({
-					...heroStats,
-					search: heroStats.search - 1,
-				});
-				setSearchMessage(message.nothing);
-				break;
+		if (heroStats.search) {
+			const num = getRandomInt(0, 7);
+			switch (num) {
+				case 0:
+				case 1:
+				case 2:
+				case 3:
+					getPokemon();
+					setHeroStats({
+						...heroStats,
+						search: heroStats.search - 1,
+					});
+					setMessage('');
+					break;
+				case 4:
+					setHeroStats({
+						...heroStats,
+						search: heroStats.search - 1,
+						pokeball: heroStats.pokeball + 1,
+					});
+					setPokemon('');
+					setMessage(messageData.pokeball);
+					break;
+				case 5:
+					setHeroStats({
+						...heroStats,
+						search: heroStats.search + 1,
+					});
+					setPokemon('');
+					setMessage(messageData.device);
+					break;
+				case 6:
+					setHeroStats({
+						...heroStats,
+						search: heroStats.search - 1,
+					});
+					setPokemon('');
+					setMessage(messageData.nothing);
+					break;
 
-			default:
-				setHeroStats({
-					...heroStats,
-					search: heroStats.search - 1,
-				});
-				setSearchMessage(message.nothing);
-				break;
+				default:
+					setHeroStats({
+						...heroStats,
+						search: heroStats.search - 1,
+					});
+					setPokemon('');
+					setMessage(messageData.nothing);
+					break;
+			}
+		} else {
+			setMessage(messageData.deviceNull);
 		}
 	};
 
@@ -127,56 +175,73 @@ function App() {
 		<ThemeProvider theme={theme}>
 			<div className='App'>
 				<header className='App-header'>
-					{isLoaded && (
-						<div>
+					<div>
+						<div className='dupa2'>
 							<HeroStats stats={heroStats} />
-							{isPokdexShow && <Pokedex pokedexData={pokedexData} />}
-							{isPokChoose && (
-								<Pokedex mode='choose' pokedexData={pokedexData} getId={getPokoemonId} />
-							)}
-							{searchMessage && <p>{searchMessage}</p>}
-							{!searchMessage && <PokemonCard pokemon={pokemon} />}
-							{isFightMode && (
+							<Button
+								action={() => {
+									setIsPokdexShow((prev) => !prev);
+								}}
+							>
+								Show Pockedex [{pokedexData.length}]
+							</Button>
+						</div>
+
+						{isPokdexShow && <Pokedex pokedexData={pokedexData} />}
+						{isPokChoose && (
+							<Pokedex mode='choose' pokedexData={pokedexData} getId={getPokoemonId} />
+						)}
+						<Board>
+							{isLoaded && (
 								<>
-									<PokemonCard pokemon={pokedexData[chosenPokemonId]} />{' '}
-									<button onClick={() => attack()}>Attack!</button>
+									{message && (
+										<motion.p
+											initial={{ scale: 0.8 }}
+											transition={{ duration: 0.2 }}
+											animate={{ scale: 1 }}
+										>
+											{message}
+										</motion.p>
+									)}
+									{!message && <PokemonCard pokemon={pokemon} />}
+									{isFightMode && (
+										<>
+											<p>vs</p>
+											<PokemonCard pokemon={pokedexData[chosenPokemonId]} />
+										</>
+									)}
 								</>
 							)}
-							{!isFightMode && (
-								<>
-									<button onClick={() => catchPokemon()}> Catch</button>
-									<button
-										onClick={() => {
-											searchPokemon();
-										}}
-									>
-										Use Search Detector
-									</button>
-									<button
-										onClick={() => {
+						</Board>
+						{isFightMode && (
+							<div className='dupa'>
+								<Button disabled={isAttacking} action={() => attack()}>
+									Attack!
+								</Button>
+							</div>
+						)}
+						{!isFightMode && (
+							<div className='dupa'>
+								{pokemon && <Button action={() => catchPokemon()}> Catch</Button>}
+								<Button
+									action={() => {
+										searchPokemon();
+									}}
+								>
+									Use Search Detector
+								</Button>
+								{pokemon && (
+									<Button
+										action={() => {
 											setIsPokChoose((prev) => !prev);
 										}}
 									>
 										Fight
-									</button>
-									<button
-										onClick={() => {
-											getPokemon();
-										}}
-									>
-										GetPokemon
-									</button>
-									<button
-										onClick={() => {
-											setIsPokdexShow((prev) => !prev);
-										}}
-									>
-										ShowPockedex
-									</button>
-								</>
-							)}
-						</div>
-					)}
+									</Button>
+								)}
+							</div>
+						)}
+					</div>
 				</header>
 			</div>
 		</ThemeProvider>
