@@ -8,18 +8,25 @@ import {
 	StyledHpBar,
 	StyledTextSmall,
 } from './PokemonCard.styled';
+import Button from '../Button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const PokemonCard = ({ pokemon, mode = 'normal', id, getId }) => {
+	const [isEpic, setIsEpic] = useState(false);
+	const hp = pokemon.currentHp;
+
 	function getHpPercent() {
-		return (pokemon.currentHp / pokemon.stats[0].base_stat) * 100;
+		return (hp / pokemon.stats[0].base_stat) * 100;
 	}
+	useEffect(() => {
+		pokemon.base_experience > 200 && setIsEpic(true);
+	}, [pokemon.base_experience]);
 
 	return (
 		<AnimatePresence>
 			<motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }} transition={{ duration: 0.2 }}>
-				<StyledPokemonCard type={pokemon.types[0].type.name}>
+				<StyledPokemonCard epic={isEpic} type={pokemon.types[0].type.name}>
 					<StyledPokemonId>#{pokemon.id}</StyledPokemonId>
 					<StyledImgWrap type={pokemon.types[0].type.name}>
 						<StyledPokemonImg
@@ -30,7 +37,7 @@ const PokemonCard = ({ pokemon, mode = 'normal', id, getId }) => {
 					<StyledPokemonName>{pokemon.name}</StyledPokemonName>
 					<StyledHpBar percent={getHpPercent()} hp={pokemon.stats[0].base_stat}></StyledHpBar>
 					<p>
-						HP: {pokemon.currentHp} / {pokemon.stats[0].base_stat}
+						HP: {hp} / {pokemon.stats[0].base_stat}
 					</p>
 
 					<StyledPokemonColumn>
@@ -44,7 +51,7 @@ const PokemonCard = ({ pokemon, mode = 'normal', id, getId }) => {
 						</div>
 					</StyledPokemonColumn>
 
-					{mode === 'choose' && <button onClick={() => getId(id)}>choose</button>}
+					{mode === 'choose' && <Button onClick={() => getId(id)}>Choose</Button>}
 					{mode === 'normal' && (
 						<StyledPokemonColumn>
 							<div>

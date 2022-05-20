@@ -1,10 +1,12 @@
 import styled from 'styled-components';
+import sparkle from '../../img/sparkles.gif';
 
 export const StyledPokemonCard = styled.div`
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	position: relative;
 	color: white;
 	/* height: 18rem; */
 	width: 12rem;
@@ -27,7 +29,22 @@ export const StyledPokemonCard = styled.div`
 	border-color: ${({ type, theme }) => {
 		return theme.pokemonColorType[type];
 	}};
+
+	${(props) => {
+		if (props.epic)
+			return `&::after {
+		content: '';
+		background-image: url(${sparkle});
+		width: 100%;
+		background-size: cover;
+		height: 100%;
+		position: absolute;
+		top: 0;
+		border-radius: 1rem;
+		opacity: 0.1;`;
+	}}
 `;
+
 export const StyledImgWrap = styled.div`
 	background: linear-gradient(to bottom, rgb(60 60 60 / 59%), rgb(36 36 36));
 	box-shadow: 3px 5px 5px 0px #00000033;

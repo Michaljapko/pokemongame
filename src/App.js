@@ -18,6 +18,10 @@ function App() {
 	const [isPokChoose, setIsPokChoose] = useState(false);
 	const [isFightMode, setIsFightMode] = useState(false);
 	const [isAttacking, setIsAttacking] = useState(false);
+	const [dmg, setDmg] = useState();
+	const [enemyDmg, setEnemyDmg] = useState();
+	const [isGetDmg, setIsGetDmg] = useState(false);
+	const [isEnemyGetDmg, setIsEnemyGetDmg] = useState(false);
 	const [message, setMessage] = useState();
 	const [pokemon, setPokemon] = useState();
 	const [chosenPokemonId, setChosenPokemonId] = useState();
@@ -41,6 +45,10 @@ function App() {
 			setPokedexData([{ ...res.data, currentHp: res.data.stats[0].base_stat }]);
 			setIsLoaded(true);
 		});
+	};
+	const animationEnd = () => {
+		setIsEnemyGetDmg(false);
+		setIsGetDmg(false);
 	};
 
 	const catchPokemon = () => {
@@ -75,6 +83,11 @@ function App() {
 		let attack = getRandomInt(0, attackPower) - getRandomInt(0, enemyDefPower);
 		if (attack < 0) {
 			attack = 0;
+			setDmg('Miss');
+		} else {
+			setDmg(attack);
+			setIsEnemyGetDmg(true);
+			setTimeout(animationEnd, 1000);
 		}
 		const enemyHp = pokemon.currentHp - attack;
 		setPokemon({ ...pokemon, currentHp: enemyHp });
@@ -95,8 +108,14 @@ function App() {
 		const enemyAttackPower = pokemon.stats[1].base_stat;
 		const defPower = pokedexData[chosenPokemonId].stats[2].base_stat;
 		let enemyAttack = getRandomInt(0, enemyAttackPower) - getRandomInt(0, defPower);
+
 		if (enemyAttack < 0) {
 			enemyAttack = 0;
+			setEnemyDmg('Miss');
+		} else {
+			setEnemyDmg(enemyAttack);
+			setIsGetDmg(true);
+			setTimeout(animationEnd, 1000);
 		}
 		const hp = pokedexData[chosenPokemonId].currentHp - enemyAttack;
 		if (hp <= 0) {
@@ -203,11 +222,38 @@ function App() {
 											{message}
 										</motion.p>
 									)}
-									{!message && <PokemonCard pokemon={pokemon} />}
+									{!message && (
+										<motion.div
+											animate={isEnemyGetDmg ? { x: [0, 10, 0, 5, 0] } : { x: 0 }}
+											transition={{ duration: 0.4 }}
+										>
+											<PokemonCard isGetDmg={isEnemyGetDmg} pokemon={pokemon} />
+											<motion.div
+												animate={isEnemyGetDmg ? { y: [0, -100], opacity: [1, 0] } : { y: 0 }}
+												style={{ position: 'absolute', opacity: 0, color: 'red' }}
+												transition={{ duration: 1 }}
+											>
+												-{dmg}
+											</motion.div>
+										</motion.div>
+									)}
 									{isFightMode && (
 										<>
 											<p>vs</p>
-											<PokemonCard pokemon={pokedexData[chosenPokemonId]} />
+
+											<motion.div
+												animate={isGetDmg ? { x: [0, 10, 0, 5, 0] } : { x: 0 }}
+												transition={{ duration: 0.4 }}
+											>
+												<PokemonCard pokemon={pokedexData[chosenPokemonId]} />
+												<motion.div
+													animate={isGetDmg ? { y: [0, -100], opacity: [1, 0] } : { y: 0 }}
+													style={{ position: 'absolute', opacity: 0, color: 'red' }}
+													transition={{ duration: 1 }}
+												>
+													-{enemyDmg}
+												</motion.div>
+											</motion.div>
 										</>
 									)}
 								</>
