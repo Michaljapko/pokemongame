@@ -11,57 +11,55 @@ import {
 import Button from '../Button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { GAME_SETTINGS } from '../../helpers/gameSettings';
 
 const PokemonCard = ({ pokemon, mode = 'normal', id, getId }) => {
 	const [isEpic, setIsEpic] = useState(false);
-	const hp = pokemon.currentHp;
 
 	function getHpPercent() {
-		return (hp / pokemon.stats[0].base_stat) * 100;
+		return (pokemon.currentHp / pokemon.hp) * 100;
 	}
+
 	useEffect(() => {
-		pokemon.base_experience > 200 && setIsEpic(true);
-	}, [pokemon.base_experience]);
+		pokemon.exp > GAME_SETTINGS.epicExpPokemon && setIsEpic(true);
+	}, [pokemon.exp]);
 
 	return (
 		<AnimatePresence>
 			<motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }} transition={{ duration: 0.2 }}>
-				<StyledPokemonCard epic={isEpic} type={pokemon.types[0].type.name}>
+				<StyledPokemonCard epic={isEpic} type={pokemon.type}>
 					<StyledPokemonId>#{pokemon.id}</StyledPokemonId>
-					<StyledImgWrap type={pokemon.types[0].type.name}>
-						<StyledPokemonImg
-							src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${pokemon.id}.png`}
-							alt={pokemon.name}
-						/>
+					<StyledImgWrap type={pokemon.type}>
+						<StyledPokemonImg src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${pokemon.id}.png`} alt={pokemon.name} />
 					</StyledImgWrap>
 					<StyledPokemonName>{pokemon.name}</StyledPokemonName>
-					<StyledHpBar percent={getHpPercent()} hp={pokemon.stats[0].base_stat}></StyledHpBar>
+					<StyledHpBar percent={getHpPercent()} hp={pokemon.hp}></StyledHpBar>
 					<p>
-						HP: {hp} / {pokemon.stats[0].base_stat}
+						HP: {pokemon.currentHp} / {pokemon.hp}
 					</p>
 
 					<StyledPokemonColumn>
 						<div>
 							<StyledTextSmall>Attack</StyledTextSmall>
-							<p>{pokemon.stats[1].base_stat}</p>
+							<p>{pokemon.attack}</p>
 						</div>
 						<div>
 							<StyledTextSmall>Def</StyledTextSmall>
-							<p>{pokemon.stats[2].base_stat}</p>
+							<p>{pokemon.def}</p>
 						</div>
 					</StyledPokemonColumn>
 
-					{mode === 'choose' && <Button onClick={() => getId(id)}>Choose</Button>}
+					{mode === 'choose' && <Button action={() => getId(id)}>Choose</Button>}
 					{mode === 'normal' && (
 						<StyledPokemonColumn>
 							<div>
 								<StyledTextSmall>Type</StyledTextSmall>
-								<p>{pokemon.types[0].type.name}</p>
+								<p>{pokemon.type}</p>
 							</div>
 
 							<div>
 								<StyledTextSmall>Exp</StyledTextSmall>
-								<p>{pokemon.base_experience}</p>
+								<p>{pokemon.exp}</p>
 							</div>
 						</StyledPokemonColumn>
 					)}

@@ -1,15 +1,14 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { getRandomInt } from './helpers/getNumber';
-import PokemonCard from './components/PokeomnCard/PokemonCard';
 import HeroStats from './components/HeroStats';
 import Pokedex from './components/Pokedex';
 import Board from './components/Board';
 import Button from './components/Button';
 import theme from './theme';
-import { motion } from 'framer-motion';
 import { messageData } from './store/messages';
 import { ThemeProvider } from 'styled-components';
+import { GAME_SETTINGS } from './helpers/gameSettings';
 import './App.css';
 
 function App() {
@@ -20,45 +19,86 @@ function App() {
 	const [isAttacking, setIsAttacking] = useState(false);
 	const [dmg, setDmg] = useState();
 	const [enemyDmg, setEnemyDmg] = useState();
-	const [isGetDmg, setIsGetDmg] = useState(false);
+	const [isGetDmg, setIsGetDmg] = useState();
 	const [isEnemyGetDmg, setIsEnemyGetDmg] = useState(false);
+	const [miss, setMiss] = useState();
 	const [message, setMessage] = useState();
 	const [pokemon, setPokemon] = useState();
 	const [chosenPokemonId, setChosenPokemonId] = useState();
 	const [pokedexData, setPokedexData] = useState([]);
 	const [heroStats, setHeroStats] = useState({
-		exp: 100,
-		pokeball: 50,
-		search: 100,
+		exp: GAME_SETTINGS.expStat,
+		pokeball: GAME_SETTINGS.pokeballStat,
+		search: GAME_SETTINGS.searchStat,
 	});
 
 	const getPokemon = () => {
 		setIsLoaded(false);
-		axios.get(`https://pokeapi.co/api/v2/pokemon/${getRandomInt(0, 800)}`).then((res) => {
-			setPokemon({ ...res.data, currentHp: res.data.stats[0].base_stat });
-			setIsLoaded(true);
-		});
+		axios
+			.get(`https://pokeapi.co/api/v2/pokemon/${getRandomInt(0, GAME_SETTINGS.poksNum)}`)
+			.then((res) => {
+				let pokemonId = res.data.id;
+				while (pokemonId.toString().length < 3) {
+					pokemonId = 0 + pokemonId.toString();
+				}
+				setPokemon({
+					id: pokemonId,
+					name: res.data.name,
+					type: res.data.types[0].type.name,
+					attack: res.data.stats[1].base_stat,
+					def: res.data.stats[2].base_stat,
+					exp: res.data.base_experience,
+					hp: res.data.stats[0].base_stat,
+					currentHp: res.data.stats[0].base_stat,
+				});
+			})
+			.then(() => {
+				setIsLoaded(true);
+			});
 	};
 	const getYourFirstPokemon = () => {
 		setIsLoaded(false);
-		axios.get(`https://pokeapi.co/api/v2/pokemon/${getRandomInt(0, 800)}`).then((res) => {
-			setPokedexData([{ ...res.data, currentHp: res.data.stats[0].base_stat }]);
-			setIsLoaded(true);
-		});
+		axios
+			.get(`https://pokeapi.co/api/v2/pokemon/${getRandomInt(0, 905)}`)
+			.then((res) => {
+				let pokemonId = res.data.id;
+				while (pokemonId.toString().length < 3) {
+					pokemonId = 0 + pokemonId.toString();
+				}
+				setPokedexData([
+					{
+						id: pokemonId,
+						name: res.data.name,
+						type: res.data.types[0].type.name,
+						attack: res.data.stats[1].base_stat,
+						def: res.data.stats[2].base_stat,
+						exp: res.data.base_experience,
+						hp: res.data.stats[0].base_stat,
+						currentHp: res.data.stats[0].base_stat,
+					},
+				]);
+			})
+			.then(() => {
+				setIsLoaded(true);
+			});
 	};
 	const animationEnd = () => {
 		setIsEnemyGetDmg(false);
 		setIsGetDmg(false);
+		setMiss(false);
 	};
 
 	const catchPokemon = () => {
 		if (heroStats.pokeball !== 0) {
-			const pokemonNum = getRandomInt(0, pokemon.base_experience);
+			const pokemonNum = getRandomInt(0, pokemon.exp);
 			const playerNum = getRandomInt(0, heroStats.exp);
 			if (playerNum > pokemonNum) {
 				setPokedexData([...pokedexData, pokemon]);
 				setPokemon('');
 				setMessage(messageData.catchSuccses);
+			} else {
+				setMiss(true);
+				setTimeout(animationEnd, 1000);
 			}
 
 			setHeroStats({
@@ -74,16 +114,19 @@ function App() {
 		setChosenPokemonId(id);
 		setIsPokChoose(false);
 		setIsFightMode(true);
+		setMessage('');
 	};
 
 	const attack = () => {
 		setIsAttacking(true);
-		const attackPower = pokedexData[chosenPokemonId].stats[1].base_stat;
-		const enemyDefPower = pokemon.stats[2].base_stat;
+		const attackPower = pokedexData[chosenPokemonId].attack;
+		const enemyDefPower = pokemon.def;
 		let attack = getRandomInt(0, attackPower) - getRandomInt(0, enemyDefPower);
 		if (attack < 0) {
 			attack = 0;
 			setDmg('Miss');
+			setIsEnemyGetDmg(true);
+			setTimeout(animationEnd, 1000);
 		} else {
 			setDmg(attack);
 			setIsEnemyGetDmg(true);
@@ -97,37 +140,58 @@ function App() {
 				setIsAttacking(false);
 				setMessage(messageData.win);
 				setPokemon('');
+				setHeroStats({ ...heroStats, exp: heroStats.exp + calculateExp(pokemon.exp) });
 			}, 1000);
 		} else {
-			setTimeout(enemyAttack, 1000);
+			setTimeout(enemyAttack, 1100);
 		}
 	};
 
 	const enemyAttack = () => {
 		setIsAttacking(true);
-		const enemyAttackPower = pokemon.stats[1].base_stat;
-		const defPower = pokedexData[chosenPokemonId].stats[2].base_stat;
+		const enemyAttackPower = pokemon.attack;
+		const defPower = pokedexData[chosenPokemonId].def;
+
 		let enemyAttack = getRandomInt(0, enemyAttackPower) - getRandomInt(0, defPower);
 
-		if (enemyAttack < 0) {
+		if (enemyAttack <= 0) {
 			enemyAttack = 0;
 			setEnemyDmg('Miss');
+			setIsGetDmg(true);
+			setTimeout(animationEnd, 1000);
 		} else {
 			setEnemyDmg(enemyAttack);
 			setIsGetDmg(true);
 			setTimeout(animationEnd, 1000);
 		}
 		const hp = pokedexData[chosenPokemonId].currentHp - enemyAttack;
+		setPokedexData(
+			pokedexData.filter((e, index) => {
+				if (index === chosenPokemonId) {
+					e.currentHp = hp;
+				}
+				return e;
+			})
+		);
+		console.log(pokedexData, enemyDmg, hp);
 		if (hp <= 0) {
-			// setMessage(messageData.lose);
-			// // pokedexData.splice(chosenPokemonId, 1);
-			// // setPokedexData([...pokedexData]);
-			// setIsPokChoose(true);
-			console.log('dupa Przegrales');
+			setTimeout(() => {
+				setIsAttacking(false);
+				setIsFightMode(false);
+				setMessage(messageData.lose);
+				setPokedexData(
+					pokedexData.filter((e, index) => {
+						return index !== chosenPokemonId;
+					})
+				);
+			}, 1000);
+		} else {
+			setIsAttacking(false);
 		}
-		pokedexData[chosenPokemonId].currentHp = hp;
-		setPokedexData([...pokedexData]);
-		setIsAttacking(false);
+	};
+
+	const calculateExp = (pokemonExp) => {
+		return Math.floor(pokemonExp * GAME_SETTINGS.percentExp);
 	};
 
 	const searchPokemon = () => {
@@ -202,63 +266,25 @@ function App() {
 									setIsPokdexShow((prev) => !prev);
 								}}
 							>
-								Show Pockedex [{pokedexData.length}]
+								{isPokdexShow ? 'Close' : 'Show'} Pockedex [{pokedexData.length}]
 							</Button>
 						</div>
 
 						{isPokdexShow && <Pokedex pokedexData={pokedexData} />}
-						{isPokChoose && (
-							<Pokedex mode='choose' pokedexData={pokedexData} getId={getPokoemonId} />
-						)}
-						<Board>
-							{isLoaded && (
-								<>
-									{message && (
-										<motion.p
-											initial={{ scale: 0.8 }}
-											transition={{ duration: 0.2 }}
-											animate={{ scale: 1 }}
-										>
-											{message}
-										</motion.p>
-									)}
-									{!message && (
-										<motion.div
-											animate={isEnemyGetDmg ? { x: [0, 10, 0, 5, 0] } : { x: 0 }}
-											transition={{ duration: 0.4 }}
-										>
-											<PokemonCard isGetDmg={isEnemyGetDmg} pokemon={pokemon} />
-											<motion.div
-												animate={isEnemyGetDmg ? { y: [0, -100], opacity: [1, 0] } : { y: 0 }}
-												style={{ position: 'absolute', opacity: 0, color: 'red' }}
-												transition={{ duration: 1 }}
-											>
-												-{dmg}
-											</motion.div>
-										</motion.div>
-									)}
-									{isFightMode && (
-										<>
-											<p>vs</p>
-
-											<motion.div
-												animate={isGetDmg ? { x: [0, 10, 0, 5, 0] } : { x: 0 }}
-												transition={{ duration: 0.4 }}
-											>
-												<PokemonCard pokemon={pokedexData[chosenPokemonId]} />
-												<motion.div
-													animate={isGetDmg ? { y: [0, -100], opacity: [1, 0] } : { y: 0 }}
-													style={{ position: 'absolute', opacity: 0, color: 'red' }}
-													transition={{ duration: 1 }}
-												>
-													-{enemyDmg}
-												</motion.div>
-											</motion.div>
-										</>
-									)}
-								</>
-							)}
-						</Board>
+						{isPokChoose && <Pokedex mode='choose' pokedexData={pokedexData} getId={getPokoemonId} />}
+						<Board
+							isLoaded={isLoaded}
+							isFightMode={isFightMode}
+							isEnemyGetDmg={isEnemyGetDmg}
+							isGetDmg={isGetDmg}
+							dmg={dmg}
+							enemyDmg={enemyDmg}
+							message={message}
+							miss={miss}
+							pokemon={pokemon}
+							pokedexData={pokedexData}
+							chosenPokemonId={chosenPokemonId}
+						/>
 						{isFightMode && (
 							<div className='dupa'>
 								<Button disabled={isAttacking} action={() => attack()}>
@@ -278,6 +304,7 @@ function App() {
 								</Button>
 								{pokemon && (
 									<Button
+										disabled={!pokedexData.length}
 										action={() => {
 											setIsPokChoose((prev) => !prev);
 										}}
