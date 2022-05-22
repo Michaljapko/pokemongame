@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 
-
 export const StyledPokedex = styled.div`
 	display: flex;
 	position: absolute;
@@ -10,7 +9,7 @@ export const StyledPokedex = styled.div`
 	justify-content: space-between;
 	padding: 2rem;
 	background-color: #efffe6;
-	z-index: 1;
+	z-index: 2;
 	border: 1px solid #ffffff;
 	border-radius: 1rem;
 `;

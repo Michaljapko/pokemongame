@@ -3,9 +3,7 @@ import sparkle from '../../img/sparkles.gif';
 
 export const StyledPokemonCard = styled.div`
 	display: flex;
-	flex-direction: column;
 	justify-content: center;
-	align-items: center;
 	position: relative;
 	color: white;
 	/* height: 18rem; */
@@ -41,10 +39,17 @@ export const StyledPokemonCard = styled.div`
 		position: absolute;
 		top: 0;
 		border-radius: 1rem;
-		opacity: 0.1;`;
+		opacity: 0.2;
+		z-index: 0;`;
 	}}
 `;
-
+export const StyledOpacityWrap = styled.div`
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	z-index: 1;
+`;
 export const StyledImgWrap = styled.div`
 	background: linear-gradient(to bottom, rgb(60 60 60 / 59%), rgb(36 36 36));
 	box-shadow: 3px 5px 5px 0px #00000033;

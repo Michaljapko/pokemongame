@@ -1,10 +1,9 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { getRandomInt } from './helpers/getNumber';
-import HeroStats from './components/HeroStats';
-import Pokedex from './components/Pokedex';
 import Board from './components/Board';
-import Button from './components/Button';
+import ActionsMenu from './components/ActionsMenu';
+import TopMenu from './components/TopMenu/TopMenu';
 import theme from './theme';
 import { messageData } from './store/messages';
 import { ThemeProvider } from 'styled-components';
@@ -20,7 +19,7 @@ function App() {
 	const [dmg, setDmg] = useState();
 	const [enemyDmg, setEnemyDmg] = useState();
 	const [isGetDmg, setIsGetDmg] = useState();
-	const [isEnemyGetDmg, setIsEnemyGetDmg] = useState(false);
+	const [isEnemyGetDmg, setIsEnemyGetDmg] = useState();
 	const [miss, setMiss] = useState();
 	const [message, setMessage] = useState();
 	const [pokemon, setPokemon] = useState();
@@ -52,6 +51,11 @@ function App() {
 					currentHp: res.data.stats[0].base_stat,
 				});
 			})
+			.catch(function (error) {
+				setIsLoaded(false);
+				console.log(error);
+				alert('Fetching fail');
+			})
 			.then(() => {
 				setIsLoaded(true);
 			});
@@ -82,6 +86,7 @@ function App() {
 				setIsLoaded(true);
 			});
 	};
+
 	const animationEnd = () => {
 		setIsEnemyGetDmg(false);
 		setIsGetDmg(false);
@@ -258,63 +263,37 @@ function App() {
 		<ThemeProvider theme={theme}>
 			<div className='App'>
 				<header className='App-header'>
-					<div>
-						<div className='dupa2'>
-							<HeroStats stats={heroStats} />
-							<Button
-								action={() => {
-									setIsPokdexShow((prev) => !prev);
-								}}
-							>
-								{isPokdexShow ? 'Close' : 'Show'} Pockedex [{pokedexData.length}]
-							</Button>
-						</div>
-
-						{isPokdexShow && <Pokedex pokedexData={pokedexData} />}
-						{isPokChoose && <Pokedex mode='choose' pokedexData={pokedexData} getId={getPokoemonId} />}
-						<Board
-							isLoaded={isLoaded}
-							isFightMode={isFightMode}
-							isEnemyGetDmg={isEnemyGetDmg}
-							isGetDmg={isGetDmg}
-							dmg={dmg}
-							enemyDmg={enemyDmg}
-							message={message}
-							miss={miss}
-							pokemon={pokemon}
-							pokedexData={pokedexData}
-							chosenPokemonId={chosenPokemonId}
-						/>
-						{isFightMode && (
-							<div className='dupa'>
-								<Button disabled={isAttacking} action={() => attack()}>
-									Attack!
-								</Button>
-							</div>
-						)}
-						{!isFightMode && (
-							<div className='dupa'>
-								{pokemon && <Button action={() => catchPokemon()}> Catch</Button>}
-								<Button
-									action={() => {
-										searchPokemon();
-									}}
-								>
-									Use Search Detector
-								</Button>
-								{pokemon && (
-									<Button
-										disabled={!pokedexData.length}
-										action={() => {
-											setIsPokChoose((prev) => !prev);
-										}}
-									>
-										Fight
-									</Button>
-								)}
-							</div>
-						)}
-					</div>
+					<TopMenu
+						heroStats={heroStats}
+						setIsPokdexShow={setIsPokdexShow}
+						isPokdexShow={isPokdexShow}
+						pokedexData={pokedexData}
+						getPokoemonId={getPokoemonId}
+						isPokChoose={isPokChoose}
+					/>
+					<Board
+						isLoaded={isLoaded}
+						isFightMode={isFightMode}
+						isEnemyGetDmg={isEnemyGetDmg}
+						isGetDmg={isGetDmg}
+						dmg={dmg}
+						enemyDmg={enemyDmg}
+						message={message}
+						miss={miss}
+						pokemon={pokemon}
+						pokedexData={pokedexData}
+						chosenPokemonId={chosenPokemonId}
+					/>
+					<ActionsMenu
+						isFightMode={isFightMode}
+						catchPokemon={catchPokemon}
+						isAttacking={isAttacking}
+						attack={attack}
+						pokemon={pokemon}
+						searchPokemon={searchPokemon}
+						pokedexData={pokedexData}
+						setIsPokChoose={setIsPokChoose}
+					/>
 				</header>
 			</div>
 		</ThemeProvider>

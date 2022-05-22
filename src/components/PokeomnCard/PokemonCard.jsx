@@ -7,6 +7,7 @@ import {
 	StyledImgWrap,
 	StyledHpBar,
 	StyledTextSmall,
+	StyledOpacityWrap,
 } from './PokemonCard.styled';
 import Button from '../Button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -28,41 +29,43 @@ const PokemonCard = ({ pokemon, mode = 'normal', id, getId }) => {
 		<AnimatePresence>
 			<motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }} transition={{ duration: 0.2 }}>
 				<StyledPokemonCard epic={isEpic} type={pokemon.type}>
-					<StyledPokemonId>#{pokemon.id}</StyledPokemonId>
-					<StyledImgWrap type={pokemon.type}>
-						<StyledPokemonImg src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${pokemon.id}.png`} alt={pokemon.name} />
-					</StyledImgWrap>
-					<StyledPokemonName>{pokemon.name}</StyledPokemonName>
-					<StyledHpBar percent={getHpPercent()} hp={pokemon.hp}></StyledHpBar>
-					<p>
-						HP: {pokemon.currentHp} / {pokemon.hp}
-					</p>
+					<StyledOpacityWrap>
+						<StyledPokemonId>#{pokemon.id}</StyledPokemonId>
+						<StyledImgWrap type={pokemon.type}>
+							<StyledPokemonImg src={`https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${pokemon.id}.png`} alt={pokemon.name} />
+						</StyledImgWrap>
+						<StyledPokemonName>{pokemon.name}</StyledPokemonName>
+						<StyledHpBar percent={getHpPercent()} hp={pokemon.hp}></StyledHpBar>
+						<p>
+							HP: {pokemon.currentHp} / {pokemon.hp}
+						</p>
 
-					<StyledPokemonColumn>
-						<div>
-							<StyledTextSmall>Attack</StyledTextSmall>
-							<p>{pokemon.attack}</p>
-						</div>
-						<div>
-							<StyledTextSmall>Def</StyledTextSmall>
-							<p>{pokemon.def}</p>
-						</div>
-					</StyledPokemonColumn>
-
-					{mode === 'choose' && <Button action={() => getId(id)}>Choose</Button>}
-					{mode === 'normal' && (
 						<StyledPokemonColumn>
 							<div>
-								<StyledTextSmall>Type</StyledTextSmall>
-								<p>{pokemon.type}</p>
+								<StyledTextSmall>Attack</StyledTextSmall>
+								<p>{pokemon.attack}</p>
 							</div>
-
 							<div>
-								<StyledTextSmall>Exp</StyledTextSmall>
-								<p>{pokemon.exp}</p>
+								<StyledTextSmall>Def</StyledTextSmall>
+								<p>{pokemon.def}</p>
 							</div>
 						</StyledPokemonColumn>
-					)}
+
+						{mode === 'choose' && <Button action={() => getId(id)}>Choose</Button>}
+						{mode === 'normal' && (
+							<StyledPokemonColumn>
+								<div>
+									<StyledTextSmall>Type</StyledTextSmall>
+									<p>{pokemon.type}</p>
+								</div>
+
+								<div>
+									<StyledTextSmall>Exp</StyledTextSmall>
+									<p>{pokemon.exp}</p>
+								</div>
+							</StyledPokemonColumn>
+						)}
+					</StyledOpacityWrap>
 				</StyledPokemonCard>
 			</motion.div>
 		</AnimatePresence>
