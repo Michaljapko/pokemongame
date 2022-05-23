@@ -1,25 +1,38 @@
 import Button from '../Button';
+import { TEXTS } from '../../store/texts';
 
-const ActionsMenu = ({ isFightMode, catchPokemon, isAttacking, attack, pokemon, searchPokemon, pokedexData, setIsPokChoose }) => {
+const ActionsMenu = ({
+	isFightMode,
+	catchPokemon,
+	isAttacking,
+	attack,
+	pokemon,
+	searchPokemon,
+	pokedexData,
+	setIsPokChoose,
+	isPokemonLose,
+	setIsPokemonLose,
+}) => {
 	return (
 		<>
 			{isFightMode && (
 				<div className='dupa'>
 					<Button disabled={isAttacking} action={() => attack()}>
-						Attack!
+						{TEXTS.attack}
 					</Button>
 				</div>
 			)}
 
 			{!isFightMode && (
 				<div className='dupa'>
-					{pokemon && <Button action={() => catchPokemon()}> Catch</Button>}
+					{pokemon && !isPokemonLose && <Button action={() => catchPokemon()}> {TEXTS.catch}</Button>}
 					<Button
 						action={() => {
 							searchPokemon();
+							setIsPokemonLose(false);
 						}}
 					>
-						Use Search Detector
+						{TEXTS.useSearchDevice}
 					</Button>
 					{pokemon && (
 						<Button
@@ -28,7 +41,7 @@ const ActionsMenu = ({ isFightMode, catchPokemon, isAttacking, attack, pokemon, 
 								setIsPokChoose((prev) => !prev);
 							}}
 						>
-							Fight
+							{isPokemonLose ? TEXTS.choosePok : TEXTS.fight}
 						</Button>
 					)}
 				</div>

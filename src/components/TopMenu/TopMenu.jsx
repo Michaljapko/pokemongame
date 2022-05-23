@@ -1,23 +1,26 @@
 import HeroStats from '../HeroStats';
 import Button from '../Button';
 import Pokedex from '../Pokedex';
+import { StyledTopMenu } from './TopMenu.styled';
+import { TEXTS } from '../../store/texts';
 
 const TopMenu = ({ heroStats, setIsPokdexShow, isPokdexShow, pokedexData, getPokoemonId, isPokChoose }) => {
 	return (
 		<>
-			<div className='dupa2'>
+			<StyledTopMenu>
 				<HeroStats stats={heroStats} />
 				<Button
+					disabled={!pokedexData.length}
 					action={() => {
 						setIsPokdexShow((prev) => !prev);
 					}}
 				>
-					{isPokdexShow ? 'Close' : 'Show'} Pockedex [{pokedexData.length}]
+					{isPokdexShow ? TEXTS.close : TEXTS.show} {TEXTS.pokedex} [{pokedexData.length}]
 				</Button>
-			</div>
+			</StyledTopMenu>
 
-			{isPokdexShow && <Pokedex pokedexData={pokedexData} />}
-			{isPokChoose && <Pokedex mode='choose' pokedexData={pokedexData} getId={getPokoemonId} />}
+			{isPokdexShow && <Pokedex setIsPokdexShow={setIsPokdexShow} pokedexData={pokedexData} />}
+			{isPokChoose && <Pokedex mode='choose' setIsPokdexShow={setIsPokdexShow} pokedexData={pokedexData} getId={getPokoemonId} />}
 		</>
 	);
 };

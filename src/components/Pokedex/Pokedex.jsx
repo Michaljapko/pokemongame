@@ -1,4 +1,5 @@
 import PokemonCard from '../PokeomnCard/PokemonCard';
+
 import { StyledPokedex } from './Pokedex.styled';
 
 const Pokedex = ({ pokedexData, mode, getId }) => {

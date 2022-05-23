@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const StyledHeroStats = styled.div`
 	padding: 1rem;
-	font-size: 1rem;
+	font-size: 1.2rem;
 	font-weight: bold;
 	color: #201f1f;
 	width: 200px;

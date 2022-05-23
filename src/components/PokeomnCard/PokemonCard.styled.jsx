@@ -4,6 +4,7 @@ import sparkle from '../../img/sparkles.gif';
 export const StyledPokemonCard = styled.div`
 	display: flex;
 	justify-content: center;
+	flex-direction: column;
 	position: relative;
 	color: white;
 	/* height: 18rem; */
@@ -23,7 +24,7 @@ export const StyledPokemonCard = styled.div`
 			}}
 			250%
 	);
-	box-shadow: 0 10px 10px -5px rgb(0 0 0 / 5%);
+	box-shadow: 0 10px 10px -5px rgb(0 0 0 / 50%);
 	border-color: ${({ type, theme }) => {
 		return theme.pokemonColorType[type];
 	}};
@@ -38,6 +39,7 @@ export const StyledPokemonCard = styled.div`
 		height: 100%;
 		position: absolute;
 		top: 0;
+		left: 0;
 		border-radius: 1rem;
 		opacity: 0.2;
 		z-index: 0;`;

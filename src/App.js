@@ -1,13 +1,14 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { getRandomInt } from './helpers/getNumber';
 import Board from './components/Board';
 import ActionsMenu from './components/ActionsMenu';
 import TopMenu from './components/TopMenu/TopMenu';
 import theme from './theme';
-import { messageData } from './store/messages';
+import { messageData } from './store/texts';
 import { ThemeProvider } from 'styled-components';
 import { GAME_SETTINGS } from './helpers/gameSettings';
+import { TEXTS } from './store/texts';
 import './App.css';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
 	const [isPokChoose, setIsPokChoose] = useState(false);
 	const [isFightMode, setIsFightMode] = useState(false);
 	const [isAttacking, setIsAttacking] = useState(false);
+	const [isPokemonLose, setIsPokemonLose] = useState(false);
 	const [dmg, setDmg] = useState();
 	const [enemyDmg, setEnemyDmg] = useState();
 	const [isGetDmg, setIsGetDmg] = useState();
@@ -62,29 +64,24 @@ function App() {
 	};
 	const getYourFirstPokemon = () => {
 		setIsLoaded(false);
-		axios
-			.get(`https://pokeapi.co/api/v2/pokemon/${getRandomInt(0, 905)}`)
-			.then((res) => {
-				let pokemonId = res.data.id;
-				while (pokemonId.toString().length < 3) {
-					pokemonId = 0 + pokemonId.toString();
-				}
-				setPokedexData([
-					{
-						id: pokemonId,
-						name: res.data.name,
-						type: res.data.types[0].type.name,
-						attack: res.data.stats[1].base_stat,
-						def: res.data.stats[2].base_stat,
-						exp: res.data.base_experience,
-						hp: res.data.stats[0].base_stat,
-						currentHp: res.data.stats[0].base_stat,
-					},
-				]);
-			})
-			.then(() => {
-				setIsLoaded(true);
-			});
+		axios.get(`https://pokeapi.co/api/v2/pokemon/${getRandomInt(0, 905)}`).then((res) => {
+			let pokemonId = res.data.id;
+			while (pokemonId.toString().length < 3) {
+				pokemonId = 0 + pokemonId.toString();
+			}
+			setPokedexData([
+				{
+					id: pokemonId,
+					name: res.data.name,
+					type: res.data.types[0].type.name,
+					attack: res.data.stats[1].base_stat,
+					def: res.data.stats[2].base_stat,
+					exp: res.data.base_experience,
+					hp: res.data.stats[0].base_stat,
+					currentHp: res.data.stats[0].base_stat,
+				},
+			]);
+		});
 	};
 
 	const animationEnd = () => {
@@ -129,7 +126,7 @@ function App() {
 		let attack = getRandomInt(0, attackPower) - getRandomInt(0, enemyDefPower);
 		if (attack < 0) {
 			attack = 0;
-			setDmg('Miss');
+			setDmg(TEXTS.miss);
 			setIsEnemyGetDmg(true);
 			setTimeout(animationEnd, 1000);
 		} else {
@@ -145,7 +142,7 @@ function App() {
 				setIsAttacking(false);
 				setMessage(messageData.win);
 				setPokemon('');
-				setHeroStats({ ...heroStats, exp: heroStats.exp + calculateExp(pokemon.exp) });
+				setHeroStats({ pokeball: heroStats.pokeball + 1, search: heroStats.search + 1, exp: heroStats.exp + calculateExp(pokemon.exp) });
 			}, 1000);
 		} else {
 			setTimeout(enemyAttack, 1100);
@@ -161,7 +158,7 @@ function App() {
 
 		if (enemyAttack <= 0) {
 			enemyAttack = 0;
-			setEnemyDmg('Miss');
+			setEnemyDmg(TEXTS.miss);
 			setIsGetDmg(true);
 			setTimeout(animationEnd, 1000);
 		} else {
@@ -178,11 +175,11 @@ function App() {
 				return e;
 			})
 		);
-		console.log(pokedexData, enemyDmg, hp);
 		if (hp <= 0) {
 			setTimeout(() => {
 				setIsAttacking(false);
 				setIsFightMode(false);
+				setIsPokemonLose(true);
 				setMessage(messageData.lose);
 				setPokedexData(
 					pokedexData.filter((e, index) => {
@@ -191,7 +188,9 @@ function App() {
 				);
 			}, 1000);
 		} else {
-			setIsAttacking(false);
+			setTimeout(() => {
+				setIsAttacking(false);
+			}, 1000);
 		}
 	};
 
@@ -254,9 +253,9 @@ function App() {
 		}
 	};
 
-	useEffect(() => {
-		getPokemon();
+	useLayoutEffect(() => {
 		getYourFirstPokemon();
+		getPokemon();
 	}, []);
 
 	return (
@@ -293,6 +292,8 @@ function App() {
 						searchPokemon={searchPokemon}
 						pokedexData={pokedexData}
 						setIsPokChoose={setIsPokChoose}
+						isPokemonLose={isPokemonLose}
+						setIsPokemonLose={setIsPokemonLose}
 					/>
 				</header>
 			</div>

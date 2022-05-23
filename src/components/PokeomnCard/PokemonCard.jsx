@@ -13,6 +13,7 @@ import Button from '../Button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { GAME_SETTINGS } from '../../helpers/gameSettings';
+import { TEXTS } from '../../store/texts';
 
 const PokemonCard = ({ pokemon, mode = 'normal', id, getId }) => {
 	const [isEpic, setIsEpic] = useState(false);
@@ -37,30 +38,30 @@ const PokemonCard = ({ pokemon, mode = 'normal', id, getId }) => {
 						<StyledPokemonName>{pokemon.name}</StyledPokemonName>
 						<StyledHpBar percent={getHpPercent()} hp={pokemon.hp}></StyledHpBar>
 						<p>
-							HP: {pokemon.currentHp} / {pokemon.hp}
+							{TEXTS.hp}: {pokemon.currentHp} / {pokemon.hp}
 						</p>
 
 						<StyledPokemonColumn>
 							<div>
-								<StyledTextSmall>Attack</StyledTextSmall>
+								<StyledTextSmall>{TEXTS.attack}</StyledTextSmall>
 								<p>{pokemon.attack}</p>
 							</div>
 							<div>
-								<StyledTextSmall>Def</StyledTextSmall>
+								<StyledTextSmall>{TEXTS.def}</StyledTextSmall>
 								<p>{pokemon.def}</p>
 							</div>
 						</StyledPokemonColumn>
 
-						{mode === 'choose' && <Button action={() => getId(id)}>Choose</Button>}
+						{mode === 'choose' && <Button action={() => getId(id)}>{TEXTS.choose}</Button>}
 						{mode === 'normal' && (
 							<StyledPokemonColumn>
 								<div>
-									<StyledTextSmall>Type</StyledTextSmall>
+									<StyledTextSmall>{TEXTS.type}</StyledTextSmall>
 									<p>{pokemon.type}</p>
 								</div>
 
 								<div>
-									<StyledTextSmall>Exp</StyledTextSmall>
+									<StyledTextSmall>{TEXTS.exp}</StyledTextSmall>
 									<p>{pokemon.exp}</p>
 								</div>
 							</StyledPokemonColumn>

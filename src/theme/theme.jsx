@@ -1,4 +1,7 @@
 const theme = {
+    palleteColor:{
+    dmgInfo:'#ff3f3f',
+	},
 	pokemonColorType: {
 		normal: '#A8A77A',
 		fire: '#EE8130',

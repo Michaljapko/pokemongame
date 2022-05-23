@@ -6,7 +6,7 @@ export const GAME_SETTINGS = {
 	//Percent of exp you get when you kill poks
 	percentExp: 0.1,
 	//StartingStats
-	expStat: 10,
+	expStat: 50,
 	pokeballStat: 5,
-	searchStat: 5,
+	searchStat: 10,
 };

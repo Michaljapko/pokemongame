@@ -27,9 +27,4 @@
 	position: relative;
 	top: -41px;
 }
-.dupa2 {
-	display: flex;
-	justify-content: space-between;
-	align-items: flex-start;
-	width: 700px;
-}
+

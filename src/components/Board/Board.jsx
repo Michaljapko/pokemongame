@@ -1,9 +1,10 @@
-import { StyledBoard } from './Board.styled';
+import { StyledBoard, StyledFightInfo } from './Board.styled';
 import animations from '../../animation/animations';
 import { motion } from 'framer-motion';
 import PokemonCard from '../PokeomnCard/PokemonCard';
+import { TEXTS } from '../../store/texts';
+import FightPopUp from '../FightPopUp/FightPopUp';
 const Board = ({ isLoaded, message, miss, isEnemyGetDmg, isGetDmg, dmg, enemyDmg, chosenPokemonId, pokemon, pokedexData, isFightMode }) => {
-	console.log();
 	return (
 		<StyledBoard>
 			{isLoaded && (
@@ -18,39 +19,27 @@ const Board = ({ isLoaded, message, miss, isEnemyGetDmg, isGetDmg, dmg, enemyDmg
 						style={{ position: 'absolute', opacity: 0, zIndex: 3 }}
 						transition={{ duration: 1 }}
 					>
-						Miss
+						{TEXTS.miss}
 					</motion.div>
 					{!message && (
 						<motion.div animate={isEnemyGetDmg ? animations.getHit : animations.default} transition={{ duration: 0.4 }}>
 							<PokemonCard isGetDmg={isEnemyGetDmg} pokemon={pokemon} />
-							<motion.div
-								animate={isEnemyGetDmg ? animations.fightMessageShow : animations.default}
-								style={{ position: 'absolute', opacity: 0, color: 'red' }}
-								transition={{ duration: 1 }}
-							>
-								{dmg === 'Miss' ? dmg : '-' + dmg}
-							</motion.div>
+							<FightPopUp isGetDmg={isEnemyGetDmg} dmg={dmg} />
 						</motion.div>
 					)}
 					{isFightMode && (
 						<>
-							<p>vs</p>
-							<motion.div
+							<p>{TEXTS.vs}</p>
+							<StyledFightInfo
 								animate={miss ? animations.fightMessageShow : animations.default}
 								style={{ position: 'absolute', opacity: 0, zIndex: 3 }}
 								transition={{ duration: 1 }}
 							>
-								Miss
-							</motion.div>
+								{TEXTS.miss}
+							</StyledFightInfo>
 							<motion.div animate={isGetDmg ? animations.getHit : animations.default} transition={{ duration: 0.4 }}>
 								<PokemonCard pokemon={pokedexData[chosenPokemonId]} />
-								<motion.div
-									animate={isGetDmg ? animations.fightMessageShow : animations.default}
-									style={{ position: 'absolute', opacity: 0, color: 'red' }}
-									transition={{ duration: 1 }}
-								>
-									{enemyDmg === 'Miss' ? enemyDmg : '-' + enemyDmg}
-								</motion.div>
+								<FightPopUp isGetDmg={isGetDmg} dmg={enemyDmg} />
 							</motion.div>
 						</>
 					)}
