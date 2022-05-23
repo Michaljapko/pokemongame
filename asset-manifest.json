@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/pokemongame/static/css/main.b270231d.css",
+    "main.js": "/pokemongame/static/js/main.0cfbddcf.js",
+    "static/js/787.a9515bcb.chunk.js": "/pokemongame/static/js/787.a9515bcb.chunk.js",
+    "static/media/sparkles.gif": "/pokemongame/static/media/sparkles.6aa4315d98f66b6c855a.gif",
+    "index.html": "/pokemongame/index.html",
+    "main.b270231d.css.map": "/pokemongame/static/css/main.b270231d.css.map",
+    "main.0cfbddcf.js.map": "/pokemongame/static/js/main.0cfbddcf.js.map",
+    "787.a9515bcb.chunk.js.map": "/pokemongame/static/js/787.a9515bcb.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.b270231d.css",
+    "static/js/main.0cfbddcf.js"
+  ]
+}
