@@ -1,10 +1,11 @@
 import axios from 'axios';
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import { getRandomInt } from './helpers/getNumber';
 import Board from './components/Board';
 import ActionsMenu from './components/ActionsMenu';
 import TopMenu from './components/TopMenu/TopMenu';
 import theme from './theme';
+
 import { messageData } from './store/texts';
 import { ThemeProvider } from 'styled-components';
 import { GAME_SETTINGS } from './helpers/gameSettings';
@@ -61,27 +62,6 @@ function App() {
 			.then(() => {
 				setIsLoaded(true);
 			});
-	};
-	const getYourFirstPokemon = () => {
-		setIsLoaded(false);
-		axios.get(`https://pokeapi.co/api/v2/pokemon/${getRandomInt(0, 905)}`).then((res) => {
-			let pokemonId = res.data.id;
-			while (pokemonId.toString().length < 3) {
-				pokemonId = 0 + pokemonId.toString();
-			}
-			setPokedexData([
-				{
-					id: pokemonId,
-					name: res.data.name,
-					type: res.data.types[0].type.name,
-					attack: res.data.stats[1].base_stat,
-					def: res.data.stats[2].base_stat,
-					exp: res.data.base_experience,
-					hp: res.data.stats[0].base_stat,
-					currentHp: res.data.stats[0].base_stat,
-				},
-			]);
-		});
 	};
 
 	const animationEnd = () => {
@@ -254,7 +234,6 @@ function App() {
 	};
 
 	useLayoutEffect(() => {
-		getYourFirstPokemon();
 		getPokemon();
 	}, []);
 

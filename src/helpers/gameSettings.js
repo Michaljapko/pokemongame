@@ -7,6 +7,6 @@ export const GAME_SETTINGS = {
 	percentExp: 0.1,
 	//StartingStats
 	expStat: 50,
-	pokeballStat: 5,
-	searchStat: 10,
+	pokeballStat: 15,
+	searchStat: 15,
 };

@@ -26,6 +26,7 @@ const PokemonCard = ({ pokemon, mode = 'normal', id, getId }) => {
 		pokemon.exp > GAME_SETTINGS.epicExpPokemon && setIsEpic(true);
 	}, [pokemon.exp]);
 
+
 	return (
 		<AnimatePresence>
 			<motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }} transition={{ duration: 0.2 }}>

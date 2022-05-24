@@ -1,4 +1,5 @@
 import Button from '../Button';
+import { StyledWrappActionMenu } from './ActionsMenu.styled';
 import { TEXTS } from '../../store/texts';
 
 const ActionsMenu = ({
@@ -16,15 +17,15 @@ const ActionsMenu = ({
 	return (
 		<>
 			{isFightMode && (
-				<div className='dupa'>
+				<StyledWrappActionMenu>
 					<Button disabled={isAttacking} action={() => attack()}>
 						{TEXTS.attack}
 					</Button>
-				</div>
+				</StyledWrappActionMenu>
 			)}
 
 			{!isFightMode && (
-				<div className='dupa'>
+				<StyledWrappActionMenu>
 					{pokemon && !isPokemonLose && <Button action={() => catchPokemon()}> {TEXTS.catch}</Button>}
 					<Button
 						action={() => {
@@ -44,7 +45,7 @@ const ActionsMenu = ({
 							{isPokemonLose ? TEXTS.choosePok : TEXTS.fight}
 						</Button>
 					)}
-				</div>
+				</StyledWrappActionMenu>
 			)}
 		</>
 	);

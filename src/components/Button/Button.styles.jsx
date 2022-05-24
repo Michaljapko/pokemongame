@@ -12,5 +12,6 @@ export const StyledButton = styled(motion.button)`
 	letter-spacing: 2px;
 	margin: 1rem;
 	box-shadow: 0 10px 10px -5px rgb(0 0 0 / 5%);
+	cursor: pointer;
 	${(props) => props.disabled && `opacity:0.5;`}
 `;
